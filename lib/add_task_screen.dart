@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:task_list_1/models/task.dart';
-import 'package:task_list_1/src/database_connector.dart';
+// import 'package:task_list_1/src/database_connector.dart';
 import 'src/timer_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'src/tasks.dart';
+import 'package:provider/provider.dart';
+import 'tasks_data_provider.dart';
 
 class TimerFormatter extends DurationFormat {
   @override
@@ -63,9 +65,7 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       _dates["date"] = widget.task?.date;
       _dates["start_time"] = widget.task?.startTime;
       _dates["end_time"] = widget.task?.endTime;
-      // print(widget.task);
-    } else
-      print("Widget.task is null btw");
+    }
   }
 
   Task? getTask() {
@@ -227,6 +227,56 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
     );
   }
 
+  void _submitAction() {
+    if (!_formKey.currentState!.validate()) return null;
+    _formKey.currentState!.save();
+
+    final _task = getTask();
+    if (_task != null) {
+      final tasksData = Provider.of<TasksListData>(context, listen: false);
+      if (widget.isCreate)
+        tasksData.insertTask(_task);
+      else {
+        print("Updating task...");
+        print(_task);
+        tasksData.updateTask(_task);
+      }
+      Navigator.of(context).pop();
+    } else {
+      print("Task is null btw");
+      return null;
+    }
+  }
+
+  List<Widget> _buildFormFields() {
+    final _startTimeField =
+        widget.isCreate ? Container() : buildDate("start_time", "Start time");
+    final _endTimeField =
+        widget.isCreate ? Container() : buildDate("end_time", "End time");
+    return [
+      Expanded(
+        child: Container(),
+        flex: 3,
+      ),
+      buildName(),
+      buildDesc(),
+      buildEstimate(),
+      buildDate("date", "Date"),
+      _startTimeField,
+      _endTimeField,
+      Expanded(
+        child: Container(),
+      ),
+      ElevatedButton(
+          onPressed: _submitAction,
+          child: Text("Submit", style: TextStyle(fontSize: 18))),
+      Expanded(
+        child: Container(),
+        flex: 3,
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -240,50 +290,7 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
                   BoxConstraints(minHeight: viewportConstraints.maxHeight),
               child: IntrinsicHeight(
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(),
-                      flex: 3,
-                    ),
-                    buildName(),
-                    buildDesc(),
-                    buildEstimate(),
-                    buildDate("date", "Date"),
-                    widget.isCreate
-                        ? Container()
-                        : buildDate("start_time", "Start time"),
-                    widget.isCreate
-                        ? Container()
-                        : buildDate("end_time", "End time"),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (!_formKey.currentState!.validate()) return null;
-                          _formKey.currentState!.save();
-                          print(_dates["date"]);
-                          final _task = getTask();
-                          if (_task != null) {
-                            if (widget.isCreate)
-                              DatabaseConnector().insertTask(_task);
-                            else {
-                              print("Updating task...");
-                              print(_task);
-                              DatabaseConnector().updateTask(_task);
-                            }
-                            Navigator.of(context).pop();
-                          } else {
-                            print("Task is null btw");
-                            return null;
-                          }
-                        },
-                        child: Text("Submit", style: TextStyle(fontSize: 18))),
-                    Expanded(
-                      child: Container(),
-                      flex: 3,
-                    ),
-                  ],
+                  children: _buildFormFields(),
                 ),
               ),
             ),

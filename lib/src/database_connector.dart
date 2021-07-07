@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 class DatabaseConnector {
   Database? database;
 
-  DatabaseConnector();
+  // DatabaseConnector();
 
   Future<void> init() async {
     print(
