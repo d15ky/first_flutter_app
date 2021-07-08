@@ -15,13 +15,33 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final dbCon = DatabaseConnector();
+  Task? _currentTask;
 
   @override
   Widget build(BuildContext context) {
     List<Task> _tasks = [];
 
+    Widget _currentTaskShown({int flex = 1}) {
+      if (_currentTask == null) return Container();
+      return Column(
+        children: [
+          Text(_currentTask!.name!),
+          Text(_currentTask!.desc!),
+          Text("Timer will be here"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow),
+              Icon(Icons.stop),
+            ],
+          )
+        ],
+      );
+    }
+
     Widget _listViewTasksUpdatable({int flex = 1}) {
       return Expanded(
+        flex: flex,
         child: Container(
           decoration: BoxDecoration(border: Border.all()),
           child: RefreshIndicator(
@@ -34,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        flex: flex,
       );
     }
 
@@ -42,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (snapshot.hasData) {
         _tasks = snapshot.data!;
         return [
+          _currentTaskShown(flex: 1),
           _listViewTasksUpdatable(flex: 5),
         ];
       }
@@ -63,10 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
             appBar: AppBar(title: Text(widget.title), actions: [
               IconButton(
                 icon: Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(context,
+                onPressed: () async {
+                  final added = await Navigator.push(context,
                       MaterialPageRoute(builder: (context) => AddTaskScreen()));
-                  setState(() {});
+                  if (added == true) {
+                    setState(() {});
+                  }
                 },
               ),
             ]),
@@ -79,9 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _playTaskButton() {
+  Widget _playTaskButton(Task task) {
     return IconButton(
-        onPressed: () {},
+        onPressed: () {
+          _currentTask = task;
+          setState(() {});
+        },
         icon: Icon(Icons.play_circle_outlined, color: Colors.green));
   }
 
@@ -153,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _playTaskButton(),
+            _playTaskButton(task),
             _stopTaskButton(),
             _infoTaskButton(task),
             _deleteTaskButton(task),

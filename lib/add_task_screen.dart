@@ -24,7 +24,6 @@ class TimerFormatter extends DurationFormat {
     if (parts.length > 0) {
       minutes = int.parse(parts[parts.length - 1]);
     }
-    print(Duration(hours: hours, minutes: minutes));
     return Duration(hours: hours, minutes: minutes);
   }
 }
@@ -101,7 +100,6 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       },
       onSaved: (String? value) {
         _name = value;
-        // print(_name);
       },
     );
   }
@@ -119,7 +117,6 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       },
       onSaved: (String? value) {
         _desc = value;
-        // print(_desc);
       },
     );
   }
@@ -220,7 +217,6 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       textAlign: TextAlign.center,
       onSaved: (DateTime? value) {
         _dates[name] = value;
-        print("Saved Date: ${value.toString()}");
       },
     );
   }
@@ -234,13 +230,10 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       if (widget.isCreate)
         dbCon.insertTask(_task);
       else {
-        print("Updating task...");
-        print(_task);
         dbCon.updateTask(_task);
       }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     } else {
-      print("Task is null btw");
       return null;
     }
   }
