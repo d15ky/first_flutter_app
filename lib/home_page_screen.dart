@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:task_list_1/src/database_connector.dart';
 import 'models/task.dart';
 import 'add_task_screen.dart';
-// import 'src/database_connector.dart';
-import 'package:provider/provider.dart';
-import 'tasks_data_provider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -16,6 +14,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final dbCon = DatabaseConnector();
+
   @override
   Widget build(BuildContext context) {
     List<Task> _tasks = [];
@@ -55,32 +55,27 @@ class _MyHomePageState extends State<MyHomePage> {
       ];
     }
 
-    // Future<List<Task>> _tasksFuture = DatabaseConnector().getTasks();
-
-    return Consumer<TasksListData>(
-      builder: (context, tasksData, _) => FutureBuilder<List<Task>>(
-        future: tasksData.getTasks(),
-        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
-          List<Widget> children = _showLoadingOrData(snapshot);
-          return Scaffold(
-              appBar: AppBar(title: Text(widget.title), actions: [
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddTaskScreen()));
-                  },
-                ),
-              ]),
-              body: SafeArea(
-                child: Column(
-                  children: children,
-                ),
-              ));
-        },
-      ),
+    return FutureBuilder<List<Task>>(
+      future: dbCon.getTasks(),
+      builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+        List<Widget> children = _showLoadingOrData(snapshot);
+        return Scaffold(
+            appBar: AppBar(title: Text(widget.title), actions: [
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AddTaskScreen()));
+                  setState(() {});
+                },
+              ),
+            ]),
+            body: SafeArea(
+              child: Column(
+                children: children,
+              ),
+            ));
+      },
     );
   }
 
@@ -128,11 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () {
-                        Provider.of<TasksListData>(context)
-                            .deleteTask(task.id!);
-                        // DatabaseConnector().deleteTask();
+                        dbCon.deleteTask(task.id!);
                         Navigator.of(context).pop();
-                        // setState(() {});
+                        setState(() {});
                       },
                       isDestructiveAction: true,
                       isDefaultAction: true,

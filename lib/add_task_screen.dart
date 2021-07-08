@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:task_list_1/models/task.dart';
-// import 'package:task_list_1/src/database_connector.dart';
+import 'package:task_list_1/src/database_connector.dart';
 import 'src/timer_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'src/tasks.dart';
-import 'package:provider/provider.dart';
-import 'tasks_data_provider.dart';
 
 class TimerFormatter extends DurationFormat {
   @override
   String format(Duration duration) {
-    // return "mashina";
     return "${duration.inHours.toString().padLeft(2, '0')}:${duration.inMinutes.remainder(60).toString().padLeft(2, '0')}";
   }
 
@@ -49,6 +46,8 @@ class ChangeTaskForm extends StatefulWidget {
 
 class _ChangeTaskFormState extends State<ChangeTaskForm> {
   final _formKey = GlobalKey<FormState>();
+
+  final dbCon = DatabaseConnector();
 
   String? _name;
   String? _desc;
@@ -172,7 +171,6 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       textAlign: TextAlign.center,
       onSaved: (Duration? value) {
         _est = value;
-        // print("Duration: ${value.toString()}");
       },
     );
   }
@@ -233,13 +231,12 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
 
     final _task = getTask();
     if (_task != null) {
-      final tasksData = Provider.of<TasksListData>(context, listen: false);
       if (widget.isCreate)
-        tasksData.insertTask(_task);
+        dbCon.insertTask(_task);
       else {
         print("Updating task...");
         print(_task);
-        tasksData.updateTask(_task);
+        dbCon.updateTask(_task);
       }
       Navigator.of(context).pop();
     } else {
