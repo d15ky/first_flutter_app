@@ -31,8 +31,21 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_arrow),
-              Icon(Icons.stop),
+              IconButton(
+                icon: Icon(Icons.play_arrow),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.stop),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.coronavirus),
+                onPressed: () {
+                  _currentTask = null;
+                  setState(() {});
+                },
+              )
             ],
           )
         ],
