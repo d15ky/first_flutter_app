@@ -8,6 +8,15 @@ class TasksViewData with ChangeNotifier {
   final stopWatchTimer = StopWatchTimer();
   Task? currentTask;
 
+  set setCurrentTask(Task? task) {
+    currentTask = task;
+    notifyListeners();
+  }
+
+  void updateListeners() {
+    notifyListeners();
+  }
+
   Future<List<Task>> getTasks() async {
     return dbCon.getTasks();
   }
