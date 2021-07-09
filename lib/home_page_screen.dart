@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:task_list_1/src/database_connector.dart';
 import 'models/task.dart';
 import 'add_task_screen.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -14,12 +15,66 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final dbCon = DatabaseConnector();
+  final _dbCon = DatabaseConnector();
+  final _stopWatchTimer = StopWatchTimer();
   Task? _currentTask;
 
   @override
   Widget build(BuildContext context) {
     List<Task> _tasks = [];
+
+    Widget _timer() {
+      Widget _timerPlayButton() => IconButton(
+            icon: Icon(Icons.play_arrow),
+            onPressed: () {
+              _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+              setState(() {});
+            },
+          );
+
+      Widget _timerPauseButton() => IconButton(
+            icon: Icon(Icons.pause),
+            onPressed: () {
+              _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+              setState(() {});
+            },
+          );
+
+      Widget _timerPlayPauseButton() {
+        if (_stopWatchTimer.isRunning) return _timerPauseButton();
+        return _timerPlayButton();
+      }
+
+      Widget _timerStopButton() => IconButton(
+            icon: Icon(Icons.stop),
+            onPressed: () {
+              if (_stopWatchTimer.isRunning)
+                _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+              _currentTask = null;
+              setState(() {});
+            },
+          );
+
+      return StreamBuilder<int>(
+        stream: _stopWatchTimer.rawTime,
+        initialData: _stopWatchTimer.rawTime.value,
+        builder: (context, snapshot) {
+          final value = snapshot.data!;
+          final displayTime =
+              StopWatchTimer.getDisplayTime(value, milliSecond: false);
+          return Column(children: [
+            Text(displayTime),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _timerPlayPauseButton(),
+                _timerStopButton(),
+              ],
+            )
+          ]);
+        },
+      );
+    }
 
     Widget _currentTaskShown({int flex = 1}) {
       if (_currentTask == null) return Container();
@@ -27,27 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Text(_currentTask!.name!),
           Text(_currentTask!.desc!),
-          Text("Timer will be here"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(Icons.play_arrow),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.stop),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.coronavirus),
-                onPressed: () {
-                  _currentTask = null;
-                  setState(() {});
-                },
-              )
-            ],
-          )
+          _timer(),
         ],
       );
     }
@@ -89,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return FutureBuilder<List<Task>>(
-      future: dbCon.getTasks(),
+      future: _dbCon.getTasks(),
       builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
         List<Widget> children = _showLoadingOrData(snapshot);
         return Scaffold(
@@ -114,19 +149,28 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _playTaskButton(Task task) {
-    return IconButton(
-        onPressed: () {
-          _currentTask = task;
-          setState(() {});
-        },
-        icon: Icon(Icons.play_circle_outlined, color: Colors.green));
-  }
+  Widget _playPauseTaskButton(Task task) {
+    Widget _playTaskButton() {
+      return IconButton(
+          onPressed: () {
+            _currentTask = task;
+            _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+            setState(() {});
+          },
+          icon: Icon(Icons.play_circle_outlined, color: Colors.green));
+    }
 
-  Widget _stopTaskButton() {
-    return IconButton(
-        onPressed: () {},
-        icon: Icon(Icons.stop_circle_outlined, color: Colors.red[300]));
+    Widget _pauseTaskButton() {
+      return IconButton(
+          onPressed: () {
+            _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+            setState(() {});
+          },
+          icon: Icon(Icons.pause_circle_outlined, color: Colors.amber));
+    }
+
+    if (_stopWatchTimer.isRunning) return _pauseTaskButton();
+    return _playTaskButton();
   }
 
   Widget _infoTaskButton(Task task) {
@@ -161,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () {
-                        dbCon.deleteTask(task.id!);
+                        _dbCon.deleteTask(task.id!);
                         Navigator.of(context).pop();
                         setState(() {});
                       },
@@ -186,13 +230,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return ExpansionTile(
       key: Key("homePageTask:${task.id}"),
       title: Text(task.name!),
+      onExpansionChanged: (isOpening) {
+        if (!isOpening) return;
+        _currentTask = task;
+        setState(() {});
+      },
       children: [
         Text(task.desc!),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _playTaskButton(task),
-            _stopTaskButton(),
+            _playPauseTaskButton(task),
+            // _stopTaskButton(),
             _infoTaskButton(task),
             _deleteTaskButton(task),
           ],
