@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Task List OM'),
+      home: NewHomePage(title: 'Task List OM'),
     );
   }
 }

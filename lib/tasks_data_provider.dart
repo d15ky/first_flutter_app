@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'models/task.dart';
 import 'src/database_connector.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TasksListData with ChangeNotifier {
-  DatabaseConnector dbCon = DatabaseConnector();
+class TasksViewData with ChangeNotifier {
+  static DatabaseConnector dbCon = DatabaseConnector();
+  final stopWatchTimer = StopWatchTimer();
+  Task? currentTask;
 
   Future<List<Task>> getTasks() async {
     return dbCon.getTasks();
