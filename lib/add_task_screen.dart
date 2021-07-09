@@ -152,7 +152,7 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
                     ),
                     TextButton(
                         onPressed: () {
-                          value = tempValue ?? Duration.zero;
+                          value = tempValue ?? value ?? Duration.zero;
                           Navigator.pop(context);
                         },
                         child: Text('Ok')),

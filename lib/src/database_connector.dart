@@ -4,42 +4,45 @@ import '../models/task.dart';
 import 'tasks.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:sqlite3/sqlite3.dart' hide Database;
 
 import 'package:flutter/widgets.dart';
 
 class DatabaseConnector {
   Database? database;
 
-  // DatabaseConnector();
-
   Future<void> init() async {
-    print(
-        "Connecting to database ${join(await getDatabasesPath(), 'tasks_list.db')}");
+    bool createDB = false;
+    final dbPath = join(await getDatabasesPath(), 'tasks_list.db');
+    print("Connecting to database $dbPath");
     WidgetsFlutterBinding.ensureInitialized();
+    final initSqlQuery =
+        await rootBundle.loadString('assets/database_queries/db_init.sql');
+    // print(initSqlQuery);
     database = await openDatabase(
-      join(await getDatabasesPath(), 'tasks_list.db'),
-      onCreate: (db, version) {
-        print("creating db");
-        db.execute("""
-            CREATE TABLE tasks(
-              id INTEGER PRIMARY KEY, 
-              name TEXT NOT NULL, 
-              desc TEXT, 
-              estimate_seconds INTEGER, 
-              planned_date DATETIME, 
-              start_time DATETIME, 
-              end_time DATETIME);
-            """);
-        print("Db created");
-        for (final task in tasks) {
-          db.insert('tasks', task.toMap(),
-              conflictAlgorithm: ConflictAlgorithm.replace);
-        }
-        print("Database initialized successfully");
+      dbPath,
+      onCreate: (db, version) async {
+        createDB = true;
         return null;
       },
       version: 1,
     );
+    if (createDB) {
+      database!.close();
+      final dbS3 = sqlite3.open(dbPath);
+      print("creating db");
+      dbS3.execute(initSqlQuery);
+      dbS3.dispose();
+      print("db created");
+      database = await openDatabase(dbPath);
+      for (final task in tasks) {
+        database!.insert('tasks', task.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      print("Database initialized successfully");
+    }
   }
 
   Future<void> checkConnection() async {
