@@ -11,7 +11,7 @@ import 'package:sqlite3/sqlite3.dart' hide Database;
 import 'package:flutter/widgets.dart';
 
 class DatabaseConnector {
-  Database? database;
+  static Database? database;
 
   Future<void> init() async {
     bool createDB = false;
