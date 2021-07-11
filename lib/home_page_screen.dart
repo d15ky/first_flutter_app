@@ -112,8 +112,8 @@ class TaskListView extends StatelessWidget {
         key: Key("homePageTask:${task.id}"),
         title: Text(task.name!),
         onExpansionChanged: (isOpening) {
-          if (!isOpening) return;
-          tasksViewData.currentTask = task;
+          if (!isOpening || tasksViewData.stopWatchTimer.isRunning) return;
+          tasksViewData.setCurrentTask = task;
           // PROVIDER setState(() {});
         },
         children: [
