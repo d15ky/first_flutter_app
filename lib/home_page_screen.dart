@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 // import 'package:task_list_1/src/database_connector.dart';
 import 'package:task_list_1/tasks_data_provider.dart';
@@ -110,7 +111,22 @@ class TaskListView extends StatelessWidget {
     Widget _buildTaskTile(Task task) {
       return ExpansionTile(
         key: Key("homePageTask:${task.id}"),
-        title: Text(task.name!),
+        title: Row(children: [
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(),
+                color: Colors.blue[100],
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(DateFormat('HH:mm').format(task.date!)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(task.name!),
+          )
+        ]),
         onExpansionChanged: (isOpening) {
           if (!isOpening || tasksViewData.stopWatchTimer.isRunning) return;
           tasksViewData.setCurrentTask = task;
@@ -259,8 +275,9 @@ class NewHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notificationProvider = TasksViewData();
     return ChangeNotifierProvider(
-      create: (_) => TasksViewData(),
+      create: (_) => notificationProvider,
       child: Scaffold(
           appBar: AppBar(title: Text(title), actions: [
             IconButton(
@@ -269,6 +286,7 @@ class NewHomePage extends StatelessWidget {
                 final added = await Navigator.push(context,
                     MaterialPageRoute(builder: (context) => AddTaskScreen()));
                 if (added == true) {
+                  notificationProvider.updateListeners();
                   // PROVIDER NOTIFY
                   // setState(() {});
                 }
