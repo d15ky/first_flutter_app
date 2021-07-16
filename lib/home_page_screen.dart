@@ -232,7 +232,7 @@ class TaskListView extends StatelessWidget {
     }
 
     return FutureBuilder<List<Task>>(
-        future: tasksViewData.getTasks(),
+        future: tasksViewData.getTasks(dayFilter: tasksViewData.currentDay),
         builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
           return Expanded(
             flex: flex,

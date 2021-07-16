@@ -23,8 +23,8 @@ class TasksViewData with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Task>> getTasks() async {
-    return dbCon.getTasks();
+  Future<List<Task>> getTasks({DateTime? dayFilter}) async {
+    return dbCon.getTasks(dayFilter: dayFilter);
   }
 
   Future<void> deleteTask(int taskId) async {
