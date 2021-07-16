@@ -108,6 +108,18 @@ class TaskListView extends StatelessWidget {
           icon: Icon(Icons.delete_forever, color: Colors.red));
     }
 
+    Widget _clickableChangeTask(Task task, {required Widget child}) {
+      return GestureDetector(
+        onTap: () {
+          if (tasksViewData.stopWatchTimer.isRunning) return;
+          tasksViewData.setCurrentTask = task;
+        },
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+            alignment: Alignment.center, width: double.infinity, child: child),
+      );
+    }
+
     Widget _buildTaskTile(Task task) {
       return ExpansionTile(
         key: Key("homePageTask:${task.id}"),
@@ -133,15 +145,18 @@ class TaskListView extends StatelessWidget {
           // PROVIDER setState(() {});
         },
         children: [
-          Text(task.desc!),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _playPauseTaskButton(task),
-              // _stopTaskButton(),
-              _infoTaskButton(task),
-              _deleteTaskButton(task),
-            ],
+          _clickableChangeTask(task, child: Text(task.desc!)),
+          _clickableChangeTask(
+            task,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _playPauseTaskButton(task),
+                // _stopTaskButton(),
+                _infoTaskButton(task),
+                _deleteTaskButton(task),
+              ],
+            ),
           ),
         ],
       );
