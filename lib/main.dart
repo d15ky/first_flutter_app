@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_page_screen.dart';
+import 'src/screens/home_page/home_page_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: NewHomePage(title: 'Task List OM'),
+      home: HomePage(title: 'Task List OM'),
     );
   }
 }

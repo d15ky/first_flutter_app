@@ -1,3 +1,6 @@
+const MaxTaskNameLength = 50;
+const MaxTaskDescLength = 10000;
+
 class Task {
   final int? id;
   final String? name;
