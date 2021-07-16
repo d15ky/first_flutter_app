@@ -147,22 +147,78 @@ class TaskListView extends StatelessWidget {
       );
     }
 
+    void _currentDayPickerPopUp() {
+      showCupertinoModalPopup(
+          context: context,
+          builder: (context) {
+            DateTime tempValue = tasksViewData.currentDay;
+            return BottomSheet(
+              builder: (context) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    constraints: BoxConstraints(maxHeight: 200),
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.date,
+                      initialDateTime: tasksViewData.currentDay,
+                      onDateTimeChanged: (DateTime date) {
+                        tempValue = date;
+                      },
+                    ),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        if (tasksViewData.currentDay != tempValue)
+                          tasksViewData.setCurrentDay = tempValue;
+                        Navigator.pop(context);
+                      },
+                      child: Text('Ok')),
+                ],
+              ),
+              onClosing: () {},
+            );
+          });
+    }
+
+    Widget _currentDayButton() {
+      return InkWell(
+        onTap: () => _currentDayPickerPopUp(),
+        child: Container(
+            height: 20,
+            width: 200,
+            decoration: BoxDecoration(
+                border: Border.all(),
+                color: Colors.blue[300],
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: Center(
+                child: Text(DateFormat('dd.MM.yyyy')
+                    .format(tasksViewData.currentDay)))),
+      );
+    }
+
     Widget _showLoadingOrData(AsyncSnapshot<List<Task>> snapshot) {
       if (snapshot.hasData) {
         final _tasks = snapshot.data!;
-        return Expanded(
-          flex: flex,
-          child: Container(
-            decoration: BoxDecoration(border: Border.all()),
-            child: RefreshIndicator(
-              onRefresh: () async {
-                tasksViewData.updateListeners();
-                // Provider setState
-                return;
-              },
-              child: ListView(
-                children: _tasks.map(_buildTaskTile).toList(),
-              ),
+        return Container(
+          decoration: BoxDecoration(border: Border.all()),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              tasksViewData.updateListeners();
+              // Provider setState
+              return;
+            },
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _currentDayButton(),
+                ),
+                Flexible(
+                  child: ListView(
+                    children: _tasks.map(_buildTaskTile).toList(),
+                  ),
+                ),
+              ],
             ),
           ),
         );
