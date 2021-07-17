@@ -1,21 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:task_list_1/models/task.dart';
 import 'package:task_list_1/src/database/database_connector.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class TasksViewData with ChangeNotifier {
   static DatabaseConnector dbCon = DatabaseConnector();
-  final stopWatchTimer = StopWatchTimer();
   DateTime currentDay = DateTime.now();
-  Task? currentTask;
 
   set setCurrentDay(DateTime date) {
     currentDay = date;
-    notifyListeners();
-  }
-
-  set setCurrentTask(Task? task) {
-    currentTask = task;
     notifyListeners();
   }
 

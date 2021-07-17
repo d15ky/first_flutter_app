@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'tasks_list_view.dart';
 import 'timer_view.dart';
 
-import 'package:task_list_1/src/database/tasks_data_provider.dart';
+import 'providers/tasks_data_provider.dart';
+import 'providers/timer_provider.dart';
 import 'package:task_list_1/src/screens/change_task/change_task_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -15,28 +16,32 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final notificationProvider = TasksViewData();
-    return ChangeNotifierProvider(
-      create: (_) => notificationProvider,
+    final tasksDataProvider = TasksViewData();
+    final timerProvider = TimerViewData();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: tasksDataProvider,
+        ),
+        ChangeNotifierProvider.value(value: timerProvider)
+      ],
       child: Scaffold(
           appBar: AppBar(title: Text(title), actions: [
             IconButton(
               icon: Icon(Icons.add),
-              onPressed: () async {
-                final added = await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddTaskScreen()));
-                if (added == true) {
-                  notificationProvider.updateListeners();
-                  // PROVIDER NOTIFY
-                  // setState(() {});
-                }
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                            value: tasksDataProvider, child: AddTaskScreen())));
               },
             ),
           ]),
           body: SafeArea(
             child: Column(
               children: [
-                Consumer<TasksViewData>(
+                Consumer<TimerViewData>(
                     builder: (context, data, child) => TimerView()),
                 Consumer<TasksViewData>(
                     builder: (context, data, child) => TaskListView(flex: 5)),

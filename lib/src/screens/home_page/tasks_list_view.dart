@@ -1,5 +1,6 @@
+import 'providers/tasks_data_provider.dart';
+import 'providers/timer_provider.dart';
 import 'package:task_list_1/models/task.dart';
-import 'package:task_list_1/src/database/tasks_data_provider.dart';
 import 'package:task_list_1/src/screens/change_task/change_task_screen.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class TaskListView extends StatelessWidget {
   // final List<Task> tasks;
@@ -20,19 +20,17 @@ class TaskListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tasksViewData = Provider.of<TasksViewData>(context);
+    final tasksViewData = Provider.of<TasksViewData>(context, listen: false);
+    final timerViewData = Provider.of<TimerViewData>(context, listen: false);
 
     Widget _playPauseTaskButton(Task task) {
       Widget _playTaskButton() {
         return IconButton(
             onPressed: () {
               // PROVIDER
-              if (tasksViewData.currentTask?.id != task.id)
-                tasksViewData.currentTask = task;
-              tasksViewData.stopWatchTimer.onExecute
-                  .add(StopWatchExecute.start);
-              tasksViewData.updateListeners();
-              // setState(() {});
+              if (timerViewData.currentTask?.id != task.id)
+                timerViewData.currentTask = task;
+              timerViewData.timerPlay();
             },
             icon: Icon(Icons.play_circle_outlined, color: Colors.green));
       }
@@ -40,16 +38,13 @@ class TaskListView extends StatelessWidget {
       Widget _pauseTaskButton() {
         return IconButton(
             onPressed: () {
-              // PROVIDER
-              tasksViewData.stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-              tasksViewData.updateListeners();
-              // setState(() {});
+              timerViewData.timerPause();
             },
             icon: Icon(Icons.pause_circle_outlined, color: Colors.amber));
       }
 
-      if (tasksViewData.stopWatchTimer.isRunning &&
-          task.id == tasksViewData.currentTask?.id) return _pauseTaskButton();
+      if (timerViewData.isRunning && task.id == timerViewData.currentTask?.id)
+        return _pauseTaskButton();
       return _playTaskButton();
     }
 
@@ -112,8 +107,8 @@ class TaskListView extends StatelessWidget {
     Widget _clickableChangeTask(Task task, {required Widget child}) {
       return GestureDetector(
         onTap: () {
-          if (tasksViewData.stopWatchTimer.isRunning) return;
-          tasksViewData.setCurrentTask = task;
+          if (timerViewData.isRunning) return;
+          timerViewData.setCurrentTask = task;
         },
         behavior: HitTestBehavior.translucent,
         // Now child takes all the available width space
@@ -142,8 +137,8 @@ class TaskListView extends StatelessWidget {
           )
         ]),
         onExpansionChanged: (isOpening) {
-          if (!isOpening || tasksViewData.stopWatchTimer.isRunning) return;
-          tasksViewData.setCurrentTask = task;
+          if (!isOpening || timerViewData.isRunning) return;
+          timerViewData.setCurrentTask = task;
           // PROVIDER setState(() {});
         },
         children: [
@@ -153,7 +148,9 @@ class TaskListView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _playPauseTaskButton(task),
+                Consumer<TimerViewData>(
+                    builder: (context, data, child) =>
+                        _playPauseTaskButton(task)),
                 // _stopTaskButton(),
                 _infoTaskButton(task),
                 _deleteTaskButton(task),

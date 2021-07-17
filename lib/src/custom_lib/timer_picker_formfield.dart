@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show TextInputFormatter;
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
 abstract class DurationFormat {
   String format(Duration duration) => "";

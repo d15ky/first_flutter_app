@@ -1,7 +1,9 @@
 import 'package:task_list_1/models/task.dart';
 import 'package:task_list_1/src/database/database_connector.dart';
 import 'package:task_list_1/src/custom_lib/timer_picker_formfield.dart';
+import 'package:task_list_1/src/screens/home_page/providers/tasks_data_provider.dart';
 
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -243,7 +245,8 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       else {
         await _dbCon.updateTask(_task);
       }
-      Navigator.of(context).pop(true);
+      Navigator.of(context).pop();
+      Provider.of<TasksViewData>(context, listen: false).updateListeners();
     } else {
       return null;
     }
