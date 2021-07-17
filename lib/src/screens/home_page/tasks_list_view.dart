@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class TaskListView extends StatelessWidget {
-  // final List<Task> tasks;
   final int flex;
 
   const TaskListView({
@@ -27,7 +26,6 @@ class TaskListView extends StatelessWidget {
       Widget _playTaskButton() {
         return IconButton(
             onPressed: () {
-              // PROVIDER
               if (timerViewData.currentTask?.id != task.id)
                 timerViewData.currentTask = task;
               timerViewData.timerPlay();
@@ -54,9 +52,9 @@ class TaskListView extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ChangeTaskScreen(task: task)));
-            // ADD PROVIDER
-            // setState(() {});
+                    builder: (context) => ChangeNotifierProvider.value(
+                        value: tasksViewData,
+                        child: ChangeTaskScreen(task: task))));
           },
           icon: Icon(Icons.info_outline, color: Colors.blue));
     }
@@ -82,10 +80,8 @@ class TaskListView extends StatelessWidget {
                           style: TextStyle(color: Colors.red),
                         ),
                         onPressed: () {
-                          // PROVIDER
                           tasksViewData.deleteTask(task.id!);
                           Navigator.of(context).pop();
-                          // setState(() {});
                         },
                         isDestructiveAction: true,
                         isDefaultAction: true,
@@ -139,7 +135,6 @@ class TaskListView extends StatelessWidget {
         onExpansionChanged: (isOpening) {
           if (!isOpening || timerViewData.isRunning) return;
           timerViewData.setCurrentTask = task;
-          // PROVIDER setState(() {});
         },
         children: [
           _clickableChangeTask(task, child: Text(task.desc!)),
@@ -216,7 +211,6 @@ class TaskListView extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () async {
             tasksViewData.updateListeners();
-            // Provider setState
             return;
           },
           child: Column(
