@@ -8,6 +8,7 @@ import 'timer_view.dart';
 import 'providers/tasks_data_provider.dart';
 import 'providers/timer_provider.dart';
 import 'package:task_list_1/src/screens/change_task/change_task_screen.dart';
+import 'package:task_list_1/src/screens/tasks_heap/tasks_heap_screen.dart';
 
 class HomePage extends StatelessWidget {
   final String title;
@@ -26,18 +27,30 @@ class HomePage extends StatelessWidget {
         ChangeNotifierProvider.value(value: timerProvider)
       ],
       child: Scaffold(
-          appBar: AppBar(title: Text(title), actions: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider.value(
-                            value: tasksDataProvider, child: AddTaskScreen())));
-              },
-            ),
-          ]),
+          appBar: AppBar(
+              title: Text(title),
+              leading: IconButton(
+                icon: Icon(Icons.task),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TasksHeapScreen()));
+                },
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider.value(
+                                value: tasksDataProvider,
+                                child: AddTaskScreen())));
+                  },
+                ),
+              ]),
           body: SafeArea(
             child: Column(
               children: [

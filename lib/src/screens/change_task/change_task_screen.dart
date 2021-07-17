@@ -62,9 +62,9 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       _name = widget.task?.name;
       _desc = widget.task?.desc;
       _est = widget.task?.estimate;
-      _dates["date"] = widget.task?.date;
-      _dates["start_time"] = widget.task?.startTime;
-      _dates["end_time"] = widget.task?.endTime;
+      // _dates["date"] = widget.task?.date;
+      // _dates["start_time"] = widget.task?.startTime;
+      // _dates["end_time"] = widget.task?.endTime;
     }
   }
 
@@ -80,13 +80,14 @@ class _ChangeTaskFormState extends State<ChangeTaskForm> {
       return null;
     }
     return Task(
-        id: widget.task?.id,
-        name: _name,
-        desc: _desc,
-        estimate: _est,
-        date: _dates["date"],
-        startTime: _dates["start_time"],
-        endTime: _dates["end_time"]);
+      id: widget.task?.id,
+      name: _name,
+      desc: _desc,
+      estimate: _est,
+      // date: _dates["date"],
+      // startTime: _dates["start_time"],
+      // endTime: _dates["end_time"]
+    );
   }
 
   Widget buildName() {

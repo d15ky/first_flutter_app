@@ -124,7 +124,8 @@ class TaskListView extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10))),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(DateFormat('HH:mm').format(task.date!)),
+              child: Text('??:??'),
+              // Text(DateFormat('HH:mm').format(task.date!)),
             ),
           ),
           Padding(

@@ -6,28 +6,15 @@ class Task {
   final String? name;
   final String? desc;
   final Duration? estimate;
-  final DateTime? date;
-  DateTime? startTime;
-  DateTime? endTime;
 
-  Task(
-      {this.id,
-      this.name,
-      this.desc,
-      this.estimate,
-      this.date,
-      this.startTime,
-      this.endTime});
+  Task({this.id, this.name, this.desc, this.estimate});
 
   Map<String, dynamic> toMap() {
     return {
-      'id': this.id,
-      'name': this.name,
-      'desc': this.desc,
-      'estimate_seconds': this.estimate?.inSeconds,
-      'planned_date': date?.toString(),
-      'start_time': startTime?.toString(),
-      'end_time': endTime?.toString(),
+      'id': id,
+      'name': name,
+      'desc': desc,
+      'estimate_seconds': estimate?.inSeconds,
     };
   }
 

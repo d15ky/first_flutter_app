@@ -3,9 +3,7 @@ CREATE TABLE tasks(
     name TEXT NOT NULL, 
     desc TEXT, 
     estimate_seconds INTEGER, 
-    planned_date DATETIME, 
-    start_time DATETIME, 
-    end_time DATETIME, 
+    calculated_estimate INTEGER, 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -18,6 +16,7 @@ END;
 CREATE TABLE tasks_execution(
     id INTEGER PRIMARY KEY, 
     task_id INTEGER,
+    planned_date DATETIME, 
     start_time DATETIME, 
     end_time DATETIME, 
     duration_seconds INTEGER, 

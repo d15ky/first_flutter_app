@@ -40,8 +40,7 @@ class DatabaseConnector {
       print("db created");
       database = await openDatabase(dbPath);
       for (final task in tasks) {
-        database!.insert('tasks', task.toMap(),
-            conflictAlgorithm: ConflictAlgorithm.replace);
+        database!.insert('tasks', task.toMap());
       }
       print("Database initialized successfully");
     }
@@ -74,14 +73,14 @@ class DatabaseConnector {
 
   Future<List<Task>> getTasks({DateTime? dayFilter}) async {
     await checkConnection();
-    // dayFilter = DateTime.utc(2021, 06, 30);
-    // print(DateFormat('yyyy-MM-dd').format(dayFilter));
-    final List<Map<String, dynamic>> tasksMaps = (dayFilter != null)
-        ? await database!.query('tasks',
-            where: "date(planned_date) = ?",
-            whereArgs: [DateFormat('yyyy-MM-dd').format(dayFilter)],
-            orderBy: "planned_date")
-        : await database!.query('tasks', orderBy: "planned_date");
+    // final List<Map<String, dynamic>> tasksMaps = (dayFilter != null)
+    //     ? await database!.query('tasks',
+    //         where: "date(planned_date) = ?",
+    //         whereArgs: [DateFormat('yyyy-MM-dd').format(dayFilter)],
+    //         orderBy: "planned_date")
+    //     : await database!.query('tasks', orderBy: "planned_date");
+    final List<Map<String, dynamic>> tasksMaps =
+        await database!.query('tasks', orderBy: "created_at");
     return List.generate(tasksMaps.length, (i) {
       // todo error management and null check
       return Task(
@@ -89,13 +88,6 @@ class DatabaseConnector {
         name: tasksMaps[i]['name'],
         desc: tasksMaps[i]['desc'],
         estimate: Duration(seconds: tasksMaps[i]['estimate_seconds']),
-        date: DateTime.parse(tasksMaps[i]['planned_date']),
-        startTime: tasksMaps[i]['start_time'] != null
-            ? DateTime.parse(tasksMaps[i]['start_time'])
-            : null,
-        endTime: tasksMaps[i]['end_time'] != null
-            ? DateTime.parse(tasksMaps[i]['end_time'])
-            : null,
       );
     });
   }
