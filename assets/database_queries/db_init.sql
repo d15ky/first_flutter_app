@@ -13,7 +13,7 @@ BEGIN
    UPDATE tasks SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;
 
-CREATE TABLE tasks_execution(
+CREATE TABLE task_executions(
     id INTEGER PRIMARY KEY, 
     task_id INTEGER,
     planned_date DATETIME, 
@@ -24,23 +24,23 @@ CREATE TABLE tasks_execution(
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
-CREATE TRIGGER updated_at_tasks_execution_trigger
-AFTER UPDATE ON tasks_execution
+CREATE TRIGGER updated_at_task_executions_trigger
+AFTER UPDATE ON task_executions
 BEGIN
-   UPDATE tasks_execution SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+   UPDATE task_executions SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;
 
-CREATE TABLE tasks_execution_pauses(
+CREATE TABLE task_executions_pauses(
     id INTEGER PRIMARY KEY, 
     task_execution_id INTEGER, 
     start_time DATETIME, 
     end_time DATETIME, 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
-    FOREIGN KEY (task_execution_id) REFERENCES tasks_execution(id)
+    FOREIGN KEY (task_execution_id) REFERENCES task_executions(id)
 );
-CREATE TRIGGER updated_at_tasks_execution_pauses_trigger
-AFTER UPDATE ON tasks_execution_pauses
+CREATE TRIGGER updated_at_task_executions_pauses_trigger
+AFTER UPDATE ON task_executions_pauses
 BEGIN
-   UPDATE tasks_execution_pauses SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+   UPDATE task_executions_pauses SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
 END;

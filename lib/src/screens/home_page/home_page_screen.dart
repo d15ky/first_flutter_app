@@ -35,7 +35,9 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TasksHeapScreen()));
+                          builder: (context) => ChangeNotifierProvider.value(
+                              value: tasksDataProvider,
+                              child: TasksHeapScreen())));
                 },
               ),
               actions: [
