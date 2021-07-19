@@ -83,14 +83,16 @@ class DatabaseConnector {
 
   Future<List<TaskExec>> getTasksExecutions({DateTime? dayFilter}) async {
     await checkConnection();
-    // final List<Map<String, dynamic>> tasksExecMaps = (dayFilter != null)
-    //     ? await database!.query(tasksExecutionsTableName,
-    //         where: "date(planned_date) = ?",
-    //         whereArgs: [DateFormat('yyyy-MM-dd').format(dayFilter)],
-    //         orderBy: "planned_date")
-    //     : await database!.query(tasksExecutionsTableName, orderBy: "planned_date");
-    final List<Map<String, dynamic>> tasksExecMaps = await database!.query(
-        '$tasksExecutionsTableName LEFT JOIN $tasksTableName ON $tasksExecutionsTableName.task_id = $tasksTableName.id');
+    // TODO custom raw Query
+    String taskExecSelect = "";
+    for (final columnName in TaskExec().toMap().keys) {
+      taskExecSelect += " $tasksExecutionsTableName.$columnName";
+    }
+    final List<Map<String, dynamic>> tasksExecMaps =
+        await database!.rawQuery("""SELECT $taskExecSelect FROM 
+        $tasksExecutionsTableName 
+        LEFT JOIN $tasksTableName 
+        ON $tasksExecutionsTableName.task_id = $tasksTableName.id""");
     print(tasksExecMaps);
     return [];
     return List.generate(tasksExecMaps.length, (i) {

@@ -24,6 +24,9 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite:
+  moor:
+  sqlite3_flutter_libs:
+  path_provider:
   path:
 
 
@@ -41,6 +44,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  moor_generator:
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
